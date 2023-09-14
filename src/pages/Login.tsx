@@ -28,6 +28,12 @@ function Login() {
     }
   }
 
+  function handleGetGuestCredetials() {
+    const guestPassword = process.env.REACT_APP_guestpassword || "";
+    setEmailAddress("guest@gmail.com");
+    setPassword(guestPassword);
+  }
+
   return (
     <div className="flex h-screen overflow-hidden items-center gap-[3rem] py-4 px-6">
       {/* Left */}
@@ -99,7 +105,10 @@ function Login() {
           </p>
           <p className="text-white mt-1">
             Want guest credentials to login?
-            <span className="text-orange-[500] font-semibold ml-1 text-base cursor-pointer">
+            <span
+              className="text-orange-500 font-semibold ml-1 text-base cursor-pointer"
+              onClick={handleGetGuestCredetials}
+            >
               Click here!
             </span>
           </p>

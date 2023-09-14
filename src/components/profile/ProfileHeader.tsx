@@ -44,7 +44,7 @@ function ProfileHeader({ userInfo, userPhotosCount }: Props) {
         {userInfo?.avatar ? (
           <img
             className="rounded-full h-24 w-24 flex"
-            src={loggedInUser?.avatar}
+            src={userInfo?.avatar}
             alt={`profile`}
           />
         ) : (
