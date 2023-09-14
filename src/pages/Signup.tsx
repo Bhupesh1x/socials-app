@@ -71,7 +71,7 @@ function Singup() {
 
       <div className="flex-1">
         <div className="w-[95%] md:w-[50%] lg:w-[70%] mx-auto border border-gray-200 rounded-md px-4 py-2 shadow">
-          <h1 className="primary-text text-3xl my-6">Sign in</h1>
+          <h1 className="primary-text text-3xl my-6">Sign Up</h1>
           <p className="text-sm">
             Already have an account register
             <br /> you can{" "}
