@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { Photo } from "./Timeline";
 import UserContext from "../../context/user";
 import FirebaseContext from "../../context/firebase";
-import { commentIcon, heartIcon } from "../../helper/icons";
+import { commentIcon, heartIcon, profileIcon } from "../../helper/icons";
 import Comments from "./Comments";
+import { FirebaseObject } from "../../types";
 
 function Post({
   docId,
-  username,
+  fullName,
   imageSrc,
   caption,
   userLikedPhotos,
@@ -16,9 +17,10 @@ function Post({
   comments,
   dateCreated,
   userId,
+  avatar,
 }: Photo) {
   const { user } = useContext<any>(UserContext);
-  const { firebase, FieldValue } = useContext<any>(FirebaseContext);
+  const firebaseValue = useContext<FirebaseObject | null>(FirebaseContext);
   const [isLiked, setIsLiked] = useState(userLikedPhotos);
   const [likesCount, setLikesCount] = useState<number>(likes?.length);
   const commentInput = useRef<any>(null);
@@ -26,14 +28,14 @@ function Post({
   const handleFocus = () => commentInput?.current?.focus();
 
   async function handleToggleLiked() {
-    await firebase
+    await firebaseValue?.firebase
       .firestore()
       .collection("photos")
       .doc(docId)
       .update({
         likes: isLiked
-          ? FieldValue.arrayRemove(user.uid)
-          : FieldValue.arrayUnion(user.uid),
+          ? firebaseValue?.FieldValue.arrayRemove(user.uid)
+          : firebaseValue?.FieldValue.arrayUnion(user.uid),
       });
 
     setIsLiked((prev) => !prev);
@@ -46,12 +48,16 @@ function Post({
       {/* Header */}
       <div className="flex items-center border-b border-gray-400 h-4 p-4 py-8">
         <Link to={`/p/${userId}`} className="flex items-center gap-3">
-          <img
-            src="https://img.icons8.com/external-flat-juicy-fish/60/external-social-social-media-marketing-flat-flat-juicy-fish-4.png"
-            alt="logo"
-            className="h-8 w-8 cursor-pointer rounded-full"
-          />
-          <p className="font-bold">{username}</p>
+          {avatar ? (
+            <img
+              src={avatar}
+              alt="logo"
+              className="h-8 w-8 cursor-pointer rounded-full"
+            />
+          ) : (
+            <p>{profileIcon}</p>
+          )}
+          <p className="font-bold">{fullName}</p>
         </Link>
       </div>
 
@@ -72,7 +78,7 @@ function Post({
         </div>
 
         <div className="px-4 pt-3">
-          <span className="font-bold">{username} :</span>
+          <span className="font-bold">{fullName} :</span>
           <span className="ml-2">{caption}</span>
         </div>
       </>

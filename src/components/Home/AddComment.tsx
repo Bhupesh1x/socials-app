@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import FirebaseContext from "../../context/firebase";
 import { comment } from "./Comments";
 import useGetUser from "../../hooks/useGetUser";
+import { FirebaseObject } from "../../types";
 
 type Props = {
   docId: string;
@@ -18,18 +19,18 @@ function AddComment({
 }: Props) {
   const { user } = useGetUser();
 
-  const { firebase, FieldValue } = useContext<any>(FirebaseContext);
+  const firebaseValue = useContext<FirebaseObject | null>(FirebaseContext);
   const [comment, setComment] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    await firebase
+    await firebaseValue?.firebase
       .firestore()
       .collection("photos")
       .doc(docId)
       .update({
-        comments: FieldValue.arrayUnion({
+        comments: firebaseValue?.FieldValue.arrayUnion({
           displayName: user?.fullName,
           comment,
           userId: user?.userId,
@@ -40,6 +41,8 @@ function AddComment({
       { displayName: user?.fullName, comment, userId: user?.userId },
       ...commentsData,
     ]);
+
+    setComment("");
   }
 
   return (

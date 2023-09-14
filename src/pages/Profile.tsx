@@ -4,25 +4,13 @@ import { getUserByUserId, getUserPhotosByUserId } from "../helper/firebase";
 import toast from "react-hot-toast";
 import Header from "../components/shared/Header";
 import ProfileHeader from "../components/profile/ProfileHeader";
-
-export interface User {
-  dateCreated: number;
-  docId: string;
-  emailAddress: string;
-  followers: string[];
-  following: string[];
-  fullName: string;
-  userId: string;
-  username: string;
-}
+import ProfilePhotos from "../components/profile/ProfilePhotos";
 
 function Profile() {
   const { userId = "" } = useParams();
   const [user, setUser] = useState<any>(null);
   const [userPhotos, setUserPhotos] = useState<any>(null);
   const navigate = useNavigate();
-  const [followersCount, setFollowersCount] = useState<number>(0);
-  const [followingCount, setFollowingCount] = useState<number>(0);
 
   useEffect(() => {
     async function getUserInformation() {
@@ -36,8 +24,6 @@ function Profile() {
         navigate("/");
       }
       setUser(response);
-      setFollowersCount(user?.followers?.length || 0);
-      setFollowingCount(user?.following?.length || 0);
     }
 
     if (userId) {
@@ -46,15 +32,14 @@ function Profile() {
   }, [navigate, userId]);
 
   return (
-    <section className="bg-gray-100/50">
+    <section className="bg-gray-100/50 min-h-screen">
       <Header />
-      <div className="container flex justify-between gap-[4rem] w-full">
+      <div className="container w-full">
         <ProfileHeader
           userInfo={user}
-          followersCount={followersCount}
-          followingCount={followingCount}
           userPhotosCount={userPhotos?.length || 0}
         />
+        <ProfilePhotos photos={userPhotos} />
       </div>
     </section>
   );

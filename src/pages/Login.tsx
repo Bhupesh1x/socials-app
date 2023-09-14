@@ -2,12 +2,13 @@ import { useContext, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FirebaseContext from "../context/firebase";
 import toast from "react-hot-toast";
+import { FirebaseObject } from "../types";
 
 function Login() {
   const navigate = useNavigate();
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const { firebase } = useContext<any>(FirebaseContext);
+  const firebaseValue = useContext<FirebaseObject | null>(FirebaseContext);
 
   const isInvaidForm = useMemo(
     () => emailAddress.trim().length < 6 || password.trim().length < 6,
@@ -18,7 +19,9 @@ function Login() {
     e.preventDefault();
 
     try {
-      await firebase.auth().signInWithEmailAndPassword(emailAddress, password);
+      await firebaseValue?.firebase
+        .auth()
+        .signInWithEmailAndPassword(emailAddress, password);
       navigate("/");
     } catch (error: any) {
       toast.error(error.message);

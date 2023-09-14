@@ -4,7 +4,7 @@ import Post from "./Post";
 
 export interface Photo {
   docId: string;
-  username: string;
+  username?: string;
   imageSrc: string;
   caption: string;
   userLikedPhotos: boolean;
@@ -12,6 +12,8 @@ export interface Photo {
   comments: [];
   dateCreated: number;
   userId: string;
+  fullName: string;
+  avatar: string;
 }
 
 function Timeline() {
@@ -27,7 +29,7 @@ function Timeline() {
         photos.map(
           ({
             docId,
-            username,
+            fullName,
             imageSrc,
             caption,
             userLikedPhotos,
@@ -35,10 +37,11 @@ function Timeline() {
             comments,
             dateCreated,
             userId,
+            avatar,
           }: Photo) => (
             <Post
               key={docId}
-              username={username}
+              fullName={fullName}
               imageSrc={imageSrc}
               caption={caption}
               docId={docId}
@@ -47,6 +50,7 @@ function Timeline() {
               comments={comments}
               dateCreated={dateCreated}
               userId={userId}
+              avatar={avatar}
             />
           )
         )

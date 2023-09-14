@@ -4,6 +4,7 @@ import {
   updateCurrentUserFollowing,
   updateFollowedUserFollowers,
 } from "../../../helper/firebase";
+import { profileIcon } from "../../../helper/icons";
 
 type Props = {
   userDocId: string;
@@ -11,6 +12,7 @@ type Props = {
   profileId: string;
   userId: string;
   loggedInUserDocId: string;
+  avatar: string;
 };
 
 function SuggestedProfile({
@@ -19,6 +21,7 @@ function SuggestedProfile({
   profileId,
   userId,
   loggedInUserDocId,
+  avatar,
 }: Props) {
   const [followed, setFollowed] = useState(false);
 
@@ -28,16 +31,22 @@ function SuggestedProfile({
     await updateFollowedUserFollowers(userDocId, userId, followed);
 
     setFollowed(true);
+
+    window.location.reload();
   }
 
   return !followed ? (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <img
-          src="https://img.icons8.com/external-flat-juicy-fish/60/external-social-social-media-marketing-flat-flat-juicy-fish-4.png"
-          alt="logo"
-          className="h-8 w-8 cursor-pointer rounded-full"
-        />
+        {avatar ? (
+          <img
+            src={avatar}
+            alt="logo"
+            className="h-8 w-8 cursor-pointer rounded-full"
+          />
+        ) : (
+          <p>{profileIcon}</p>
+        )}
 
         <Link to={`/p/${profileId}`}>
           <p className="text-sm font-bold">{fullname}</p>

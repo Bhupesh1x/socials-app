@@ -23,15 +23,15 @@ function Suggestions({ userId, following, loggedInUserDocId }: Props) {
     }
   }, [following, userId]);
 
-  if (!profiles?.length) {
+  if (!profiles) {
     return <Skeleton count={1} height={150} className="mt-3" />;
   }
   return (
-    <div className="mt-3">
+    <div className="mt-3 max-h-[70vh] overflow-y-scroll">
       <h1 className="font-bold">Suggestions for you</h1>
 
       <div className="mt-4 flex flex-col gap-4">
-        {profiles.map((profile: any) => (
+        {profiles?.map((profile: any) => (
           <SuggestedProfile
             key={profile.docId}
             userDocId={profile.docId}
@@ -39,6 +39,7 @@ function Suggestions({ userId, following, loggedInUserDocId }: Props) {
             profileId={profile.userId}
             userId={userId}
             loggedInUserDocId={loggedInUserDocId}
+            avatar={profile?.avatar}
           />
         ))}
       </div>

@@ -2,14 +2,18 @@ import { useContext, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FirebaseContext from "../context/firebase";
 import toast from "react-hot-toast";
-import { doesEmailExists } from "../helper/firebase";
+import { doesEmailExists, uploadFile } from "../helper/firebase";
+import { profileIcon } from "../helper/icons";
+import { FirebaseObject } from "../types";
 
 function Singup() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
-  const { firebase } = useContext<any>(FirebaseContext);
+  const [avatar, setAvatar] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const firebaseValue = useContext<FirebaseObject | null>(FirebaseContext);
 
   const isInvaidForm = useMemo(
     () =>
@@ -25,7 +29,7 @@ function Singup() {
     const isEmailExists = await doesEmailExists(emailAddress);
     if (!isEmailExists) {
       try {
-        const createdUser = await firebase
+        const createdUser = await firebaseValue?.firebase
           .auth()
           .createUserWithEmailAndPassword(emailAddress, password);
 
@@ -33,16 +37,18 @@ function Singup() {
           displayName: fullName,
         });
 
-        await firebase.firestore().collection("users").add({
+        await firebaseValue?.firebase.firestore().collection("users").add({
           userId: createdUser.user.uid,
           fullName,
           emailAddress: emailAddress.toLowerCase(),
           following: [],
           followers: [],
           dateCreated: Date.now(),
+          avatar,
         });
 
         navigate("/");
+        window.location.reload();
       } catch (error: any) {
         toast.error(error.message);
       }
@@ -50,6 +56,14 @@ function Singup() {
       toast.error("Email already exists, please try another.");
     }
   }
+
+  const handleFileInputChange = async (e: any) => {
+    const file = e.target.files[0];
+    setIsUploading(true);
+    const url = await uploadFile(file);
+    setAvatar(url);
+    setIsUploading(false);
+  };
 
   return (
     <div className="flex h-screen overflow-hidden items-center gap-[3rem] py-4 px-6">
@@ -67,6 +81,35 @@ function Singup() {
           </p>
 
           <form className="mt-8" onSubmit={handleSignUp}>
+            <p className="mb-2">User Image</p>
+            <div className="my-3 flex items-center">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt="avatar"
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              ) : (
+                profileIcon
+              )}
+
+              <label
+                htmlFor="file-input"
+                className="ml-5 flex items-center justify-center px-4 py-2 border border-gray-400 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <span>
+                  {isUploading ? "Uploading a Image" : "Upload a Image"}
+                </span>
+                <input
+                  type="file"
+                  name="avatar"
+                  id="file-input"
+                  accept=".jpg,.jpeg,.png"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
             <p>Full Name</p>
             <input
               type="text"
